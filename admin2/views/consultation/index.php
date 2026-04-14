@@ -1,5 +1,9 @@
 <?php
-$consultations= $consultationdb->readAll();
+if($_SESSION['profil']->role == 'medecin') {
+    $consultations= $consultationdb->readMedecin($_SESSION['profil']->iduser);
+} else {
+    $consultations= $consultationdb->readAll();
+}
 ?>
 
 
@@ -123,18 +127,23 @@ $consultations= $consultationdb->readAll();
                             </td>
                             <td>
                                 <?php 
-                                    if($consultation->statut == 'Non payée') {
-                                        echo '<span class="badge badge-danger">'. $consultation->statut .'</span>';
-                                        // echo '
-                                        //     <a class="btn btn-info" href="index.php?view=consultation.control?action=update_statut&id='. $consultation->idconsultation .'&statut=Non payée">
-                                        //         Valider
-                                        //     </a>
-                                        // ';
+                                    $statut_normalized = strtolower($consultation->statut);
+                                    if($statut_normalized == 'non payée' || $statut_normalized == 'non payé') {
+                                        echo '<span class="badge badge-danger">Non payée</span>';
                                     }
-                                    else if($consultation->statut == 'Payée') {
-                                        echo '<span class="badge badge-success">'. $consultation->statut .'</span>';
+                                    else if($statut_normalized == 'payée' || $statut_normalized == 'payé') {
+                                        echo '<span class="badge badge-success">Payée</span>';
+                                        if($consultation->video_link) {
+                                            $doc_display_name = "Dr. " . $_SESSION['profil']->nom . " " . $_SESSION['profil']->prenom;
+                                            $link_with_params = $consultation->video_link . "#userInfo.displayName=" . urlencode($doc_display_name);
+                                            echo '<br/><a href="'.$link_with_params.'" target="_blank" class="btn btn-primary btn-xxs mt-2"><i class="fa fa-video-camera mr-1"></i> REJOINDRE</a>';
+                                            echo '<br/><small class="text-muted" style="font-size: 10px;">Note: Si Jitsi demande un modérateur, cliquez sur "Je suis l\'hôte".</small>';
+                                        }
+
+
                                     }
                                 ?>
+
                             </td>
                             <td>
                                 <div class="d-flex action-button">

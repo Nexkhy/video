@@ -1,4 +1,5 @@
 <?php
+// Gère la connexion à la base de données MySQL via PDO
 class Database {
     private $dsn;
     private $username;

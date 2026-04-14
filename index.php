@@ -1,3 +1,28 @@
+<?php
+// Page d'accueil principale du site (Vitrine)
+require_once 'config.php';
+require_once BACKEND_PATH_SERVICE;
+
+// --- Gestion de session et redirection par rôle ---
+$connected = false;
+$profil = null;
+
+if (isset($_SESSION['profil'])) {
+    $profil = $_SESSION['profil'];
+    $connected = true;
+    $role = $profil->role ?? 'patient';
+
+    // Médecin ou Admin → espace administration
+    if ($role === 'medecin' || $role === 'admin') {
+        header('Location: ' . BACKEND_PATH_INDEX);
+        exit;
+    }
+    // Patient → dashboard patient (seulement si force-homepage non demandé)
+    // On laisse le patient voir le site public s'il le souhaite
+}
+
+$specialites = $specialitedb->readAll();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -27,12 +52,22 @@
             <li><a href="#propos">À Propos</a></li>
             <li><a href="#premiers-soins">Premiers Soins</a></li>
             <li><a href="#contact">Contact</a></li>
+            <?php if ($connected) : ?>
             <li>
-                <a href="./login.php" class="nav-link" class="btn" id="btn-login">
-                    Se connecter
+                <a href="dashboard_patient.php" class="nav-link btn" id="btn-dashboard">
+                    <i class="fas fa-user-circle"></i> Mon espace
                 </a>
             </li>
-             
+            <li>
+                <a href="<?= BACKEND_PATH_INDEX ?>?view=logout" class="nav-link" id="btn-logout" style="color:#dc3545;">
+                    Déconnexion
+                </a>
+            </li>
+            <?php else : ?>
+            <li>
+                <a href="./login.php" class="nav-link btn" id="btn-login">Se connecter</a>
+            </li>
+            <?php endif; ?>
         </ul>
         <div class="burger">
             <div class="line1"></div>
@@ -49,9 +84,15 @@
             <h1>Votre santé, notre priorité, <br>où que vous soyez.</h1>
             <p>Consultez des médecins qualifiés en vidéo depuis le confort de votre domicile.</p>
             <div class="hero-btns">
-                <a href="./register.php" class="btn ">S'inscrire</a>
-                <a href="./view/CONNEXION.php" class="btn btn-soignant" style="background: #28a745; "  >Vous êtes soignant ?</a>
-                <!-- <a href="view/CONNEXION.php" class="btn " style="background: #02dd56;">Espace soignant</a> -->
+                <?php if ($connected) : ?>
+                    <a href="./medecin.php" class="btn">Consulter un médecin</a>
+                    <a href="./dashboard_patient.php" class="btn btn-soignant" style="background: #27ae60;">
+                        <i class="fas fa-user-circle"></i> Mon espace
+                    </a>
+                <?php else : ?>
+                    <a href="./register.php" class="btn">S'inscrire</a>
+                    <a href="./register_medecin.php" class="btn btn-soignant" style="background: #28a745;">Vous êtes soignant ?</a>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -60,30 +101,24 @@
     <section id="disponibilites" class="section-padding">
         <h2 class="section-title reveal">Nos Disponibilités & Spécialités</h2>
         <div class="grid-container reveal">
-            <div class="card">
-                <div class="icon">📅</div>
-                <h3>Généralistes</h3>
-                <p>Lun - Dim : 24h/24</p>
-                <span class="badge">Disponible</span>
-            </div>
-            <div class="card">
-                <div class="icon">👶</div>
-                <h3>Pédiatrie</h3>
-                <p>Lun - Ven : 08h - 20h</p>
-                <span class="badge">Sur RDV</span>
-            </div>
-            <div class="card">
-                <div class="icon">🌿</div>
-                <h3>Nathurophate</h3>
-                <p>Mar - Sam : 09h - 18h</p>
-                <span class="badge">Sur RDV</span>
-            </div>
-            <div class="card">
-                <div class="icon">❤️</div>
-                <h3>Cardiologie</h3>
-                <p>Mer - Ven : 10h - 16h</p>
-                <span class="badge">Urgence possible</span>
-            </div>
+            <?php 
+            if($specialites != null && sizeof($specialites) > 0):
+                foreach($specialites as $specialite):
+            ?>
+            <a href="medecin.php?idspecialite=<?= $specialite->idspecialite ?>" class="card-link" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <div class="icon">⚕️</div>
+                    <h3><?= htmlspecialchars($specialite->intitule) ?></h3>
+                    <p>Spécialiste disponible pour consultation</p>
+                    <span class="badge">Consultation vidéo</span>
+                </div>
+            </a>
+           <?php 
+                endforeach;
+            else:
+            ?>
+            <p style="text-align:center; width: 100%;">Les spécialités seront bientôt disponibles.</p>
+            <?php endif; ?>
         </div>
     </section>
 

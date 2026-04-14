@@ -1,0 +1,6 @@
+{
+    "require": {
+        "nelsius/nelsius-pay-php": "^1.0",
+        "phpmailer/phpmailer": "^7.0"
+    }
+}

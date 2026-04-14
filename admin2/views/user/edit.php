@@ -212,6 +212,81 @@ $specialites= $specialitedb->readAll();
                                         </div>
                                     </div>
 
+                                    <div id="medecin_fields" style="<?= ($user != null && $user->role == 'medecin') ? '' : 'display:none;' ?>">
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label" for="planning">
+                                                Planning (ex: Lundi, Mercredi)
+                                            </label>
+                                            <div class="col-lg-6">
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    id="planning" 
+                                                    name="planning" 
+                                                    placeholder="Lundi, Mardi..." 
+                                                    value="<?= ($user != null)? $user->planning : '' ?>">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label" for="creneaux">
+                                                Créneaux (ex: 09:00, 14:00)
+                                            </label>
+                                            <div class="col-lg-6">
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    id="creneaux" 
+                                                    name="creneaux" 
+                                                    placeholder="08:00, 10:00..." 
+                                                    value="<?= ($user != null)? $user->creneaux : '' ?>">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label" for="montant_consultation">
+                                                Tarif Consultation (FCFA)
+                                            </label>
+                                            <div class="col-lg-6">
+                                                <input 
+                                                    type="number" 
+                                                    class="form-control" 
+                                                    id="montant_consultation" 
+                                                    name="montant_consultation" 
+                                                    placeholder="Ex: 5000" 
+                                                    value="<?= ($user != null)? $user->montant_consultation : '' ?>">
+                                                <small class="text-muted">Si vide, le tarif par défaut de la spécialité sera utilisé.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label" for="taux">
+                                                Taux Commission Admin (%)
+                                            </label>
+                                            <div class="col-lg-6">
+                                                <input 
+                                                    type="number" 
+                                                    class="form-control" 
+                                                    id="taux" 
+                                                    name="taux" 
+                                                    placeholder="Ex: 20" 
+                                                    value="<?= ($user != null)? $user->taux : '' ?>">
+                                                <small class="text-muted">Si vide, le taux par défaut de la spécialité sera utilisé.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <script>
+                                        document.getElementById('role').addEventListener('change', function() {
+                                            if (this.value === 'medecin') {
+                                                document.getElementById('medecin_fields').style.display = 'block';
+                                            } else {
+                                                document.getElementById('medecin_fields').style.display = 'none';
+                                            }
+                                        });
+                                    </script>
+
                                     <div class="form-group row">
                                         <label class="col-lg-4 col-form-label" for="photo">
                                             Sélectionnez une photo de profil

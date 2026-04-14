@@ -68,7 +68,7 @@ $medecins= $userdb->readRole('medecin');
                                         </div>
                                     </div>
 
-                                    <div class="form-group row">
+                                    <div class="form-group row" <?= ($_SESSION['profil']->role == 'medecin') ? 'style="display:none;"' : '' ?>>
                                         <label class="col-lg-5 col-form-label" for="idmedecin">
                                             Sélectionnez un Médecin
                                         </label>
@@ -78,6 +78,11 @@ $medecins= $userdb->readRole('medecin');
                                                 <option value="<?php echo $consultation->idmedecin ?>" class="hide" selected>
                                                     <?php echo $consultation->nom_medecin ?>
                                                     <?php echo $consultation->prenom_medecin ?>
+                                                </option>
+                                                <?php elseif($_SESSION['profil']->role == 'medecin'): ?>
+                                                <option value="<?php echo $_SESSION['profil']->iduser ?>" selected>
+                                                    <?php echo $_SESSION['profil']->nom ?> 
+                                                    <?php echo $_SESSION['profil']->prenom ?>
                                                 </option>
                                                 <?php endif ?>
 
@@ -98,6 +103,7 @@ $medecins= $userdb->readRole('medecin');
                                             </select>
                                         </div>
                                     </div>
+
 
                                     <div class="form-group row">
                                         <label class="col-lg-5 col-form-label" for="poids">

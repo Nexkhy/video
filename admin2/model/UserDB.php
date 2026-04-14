@@ -1,4 +1,5 @@
 <?php
+// Gère toutes les opérations sur la table "user" (patients, médecins et admins)
 require_once 'Database.php';
 
 class UserDB {
@@ -14,21 +15,25 @@ class UserDB {
         $this->jointure= "
             select 
                 U.*, 
-                SP.intitule as specialite, SP.montant_consultation, SP.taux
+                SP.intitule as specialite, 
+                COALESCE(U.montant_consultation, SP.montant_consultation) as montant_consultation, 
+                COALESCE(U.taux, SP.taux) as taux
             from $this->tablename as U
             left join specialite as SP on U.idspecialite= SP.idspecialite 
         ";
+
     }
 
-    public function create($idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut) {
-        $sql= "insert into $this->tablename set idspecialite=?, nom=?, prenom=?, sexe=?, adresse=?, telephone=?, email=?, password=?, role=?, photo=?, statut=?";
-        $params= array($idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut);
+    public function create($idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut, $planning = null, $creneaux = null, $montant_consultation = null, $taux = null) {
+        $sql= "insert into $this->tablename set idspecialite=?, nom=?, prenom=?, sexe=?, adresse=?, telephone=?, email=?, password=?, role=?, photo=?, statut=?, planning=?, creneaux=?, montant_consultation=?, taux=?";
+        $params= array($idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut, $planning, $creneaux, $montant_consultation, $taux);
+
         $this->db->prepare($sql, $params);
     }
 
-    public function update($id, $idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut) {
-        $sql= "update $this->tablename set idspecialite=?, nom=?, prenom=?, sexe=?, adresse=?, telephone=?, email=?, password=?, role=?, photo=?, statut=? where $this->tableid=?";
-        $params= array($idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut, $id);
+    public function update($iduser, $idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut, $planning = null, $creneaux = null, $montant_consultation = null, $taux = null) {
+        $sql= "update $this->tablename set idspecialite=?, nom=?, prenom=?, sexe=?, adresse=?, telephone=?, email=?, password=?, role=?, photo=?, statut=?, planning=?, creneaux=?, montant_consultation=?, taux=? where $this->tableid=?";
+        $params= array($idspecialite, $nom, $prenom, $sexe, $adresse, $telephone, $email, $password, $role, $photo, $statut, $planning, $creneaux, $montant_consultation, $taux, $iduser);
         $this->db->prepare($sql, $params);
     }
 
@@ -44,6 +49,14 @@ class UserDB {
         $this->db->prepare($sql, $params);
     }
 
+    public function updateSolde($id, $montant_a_ajouter) {
+        // Pour éviter d'écraser la donnée, on ajoute  le montant au solde actuel
+        // On utilise COALESCE pour gérer le cas où solde serait NULL
+        $sql= "update $this->tablename set solde = COALESCE(solde, 0) + ? where $this->tableid=?";
+        $params= array($montant_a_ajouter, $id);
+        $this->db->prepare($sql, $params);
+    }
+
     public function delete($id) {
         $sql= "delete from $this->tablename where $this->tableid=?";
         $params= array($id);
@@ -51,25 +64,28 @@ class UserDB {
     }
 
     public function read($id) {
-        $sql= "$this->jointure where $this->tableid=?";
+        $sql= "$this->jointure where U.$this->tableid=?";
         $params= array($id);
         $req= $this->db->prepare($sql, $params);
         return $this->db->getDatas($req, true);
     }
 
+
     public function readSpecialite($idspecialite) {
-        $sql= "$this->jointure where idspecialite=? order by $this->tableid desc";
+        $sql= "$this->jointure where U.idspecialite=? order by U.$this->tableid desc";
         $params= array($idspecialite);
         $req= $this->db->prepare($sql, $params);
         return $this->db->getDatas($req, false);
     }
 
+
     public function readRole($role) {
-        $sql= "$this->jointure where role=? order by $this->tableid desc";
+        $sql= "$this->jointure where U.role=? order by U.$this->tableid desc";
         $params= array($role);
         $req= $this->db->prepare($sql, $params);
         return $this->db->getDatas($req, false);
     }
+
 
     public function readAll() {
         $sql= "$this->jointure order by $this->tableid desc";
@@ -78,12 +94,20 @@ class UserDB {
         return $this->db->getDatas($req, false);
     }
 
+    public function readByEmail($email) {
+        $sql= "select * from $this->tablename where email=?";
+        $params= array($email);
+        $req= $this->db->prepare($sql, $params);
+        return $this->db->getDatas($req, true);
+    }
+
     public function readConnexion($email, $password) {
-        $sql= "$this->jointure where email=? and password=?";
+        $sql= "$this->jointure where U.email=? and U.password=?";
         $params= array($email, $password);
         $req= $this->db->prepare($sql, $params);
         return $this->db->getDatas($req, true);
     }
+
 
     public function readConnexion2($email, $password) {
         $datas= $this->readAll();

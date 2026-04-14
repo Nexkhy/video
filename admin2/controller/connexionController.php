@@ -1,9 +1,11 @@
 <?php
+// Gere la connexion des utilisateurs au site
 $email= $_POST['email'];
 $password= $_POST['password'];
 
 $user= $userdb->readConnexion2($email, $password);
 
+// Si les identifiants sont faux
 if($user == false) {
     $_SESSION['erreur']= array(
         'type' => 'danger',
@@ -11,6 +13,7 @@ if($user == false) {
     );
     header('Location:../login.php');
 }
+// Si la connexion reussit on redirige selon le role
 else {
     $_SESSION['erreur']= array(
         'type' => 'success',

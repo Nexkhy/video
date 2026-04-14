@@ -83,12 +83,11 @@ button {
   background-color: #219653;
 }
 
-/* --- HEADER & NAVIGATION --- */
 /* Header */
 header {
   background-color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px 0;
+  padding: 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -98,6 +97,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 56px;
 }
 
 .logo {
@@ -107,13 +107,17 @@ header {
 
 .logo i {
   color: var(--primary-color);
-  font-size: 2rem;
-  margin-right: 10px;
+  font-size: 1.2rem;
+  margin-right: 8px;
+  line-height: 1;
 }
 
 .logo h1 {
   color: var(--primary-color);
+  font-size: 1.2rem;
   font-weight: 700;
+  margin: 0;
+  line-height: 1;
 }
 
 .nav-bar {
@@ -134,30 +138,83 @@ nav ul li {
   position: relative;
 }
 
-.bar-register {
+.register {
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
   gap: 1rem;
-  padding-left: 10px;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.bar-register {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.parent-bar-register {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 h4{
   color: blue;
 }
-/*register menu burger*/
-.icon-bar-register {
-  display: none !important;
-  padding: 0 !important;
+/* Header Profile Section */
+.header-profile {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
 }
-/*end register menu burger*/
 
-/*dashboard menu burger*/
-.icons-nav-bar {
-  display: none !important;
-  padding: 0 !important;
+.header-avatar-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
-/*end dashboard menu burger*/
+
+.header-avatar-info img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--primary-color);
+}
+
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 2px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.85rem;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logout-link {
+  font-size: 0.75rem;
+  color: var(--danger);
+  text-decoration: none;
+  opacity: 0.8;
+}
+.logout-link:hover { opacity: 1; text-decoration: underline; }
+
+.menu-toggle-btn {
+  display: none;
+  cursor: pointer;
+}
 nav ul li a {
   text-decoration: none;
   color: var(--dark-color);
@@ -722,13 +779,9 @@ ul .user-profile .user-name {
   color: #000;
 }
 
-.profil {
+.header-profile {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 130px;
-  text-align: center;
-  margin-left: 15px !important;
+  align-items: center;
 }
 
 #content {
@@ -745,11 +798,12 @@ ul .user-profile .user-name {
 
 .nav-link {
   color: var(--primary-color);
+  font-size: 0.85rem;
   transition: all 0.3s;
 }
 
 .nav-link:hover {
-  padding: 10px;
+  padding: 4px 8px;
   color: var(--white);
   background-color: var(--primary-color);
   border-radius: var(--border-radius);
@@ -1301,106 +1355,54 @@ ul .user-profile .user-name {
 
 /* --- RESPONSIVE DESIGN --- */
 @media (max-width: 768px) {
-  .nav-menu {
-    position: fixed;
-    left: -100%;
-    top: 70px;
+  .register {
+    gap: 0.5rem;
+  }
+
+  .parent-bar-register {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 250px;
+    background: white;
+    box-shadow: var(--shadow-lg);
+    border-radius: 0 0 10px 10px;
+    z-index: 1000;
+  }
+
+  .parent-bar-register.vue {
+    display: block !important;
+  }
+
+  .bar-register {
     flex-direction: column;
-    background-color: var(--white);
+    padding: 1.5rem;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+
+  .nav-link {
     width: 100%;
-    text-align: center;
-    transition: 0.3s;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    padding: 20px 0;
+    padding: 8px 0;
   }
 
-  .nav-menu.active {
-    left: 0;
+  .menu-toggle-btn {
+    display: block;
+    color: var(--primary-color);
   }
 
-  nav {
-    font-size: 10px;
+  .header-profile {
+    margin-left: 0.5rem;
   }
 
-  .logo {
-    font-size: 10px;
-  }
-
-  .logo i {
-    font-size: 1rem;
-  }
-  .nav-menu li {
-    margin: 15px 0;
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
-
-  .card {
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-  }
-
-  .urgence {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .contact {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    font-size: 16px;
-    width: 100%;
-    text-align: center;
-    text-decoration: none;
-    list-style: none;
-  }
-  .form-container {
-    flex-direction: column;
-  }
-
-  .form-image {
+  .user-name {
     display: none;
   }
 
-  .form-content {
-    border-radius: 8px;
-  }
-
-  .specialist-card {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-
-  .specialist-info,
-  .specialist-schedule,
-  .specialist-actions {
-    width: 100%;
-  }
-
-  .container {
-    width: 100%;
-  }
-
-  .chat-container {
-    flex-direction: column;
-  }
-
-  .profile-form {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    grid-column: 1;
-  }
-
-  .footer-content {
-    flex-direction: column;
+  .header-avatar-info img {
+    width: 38px;
+    height: 38px;
   }
 }
 
@@ -1450,76 +1452,5 @@ ul .user-profile .user-name {
   }
 
   /*menu burger register*/
-  .bar-register {
-    position: absolute !important;
-    top: 62px !important;
-    right: 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 30px;
-    font-size: 18px !important;
-    background-color: beige;
-    border-radius: 15px !important;
-    max-height: 200px !important;
-    /* margin: 0 !important;*/
-    padding: 0 15px 30px 0 !important;
-  }
-  .icon-bar-register {
-    display: block !important;
-    font-size: 25px !important;
-    color: #1b7cb0;
-  }
-  .parent-bar-register {
-    display: none;
-  }
-  .vue {
-    display: block !important;
-  }
-  .register {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-  }
-
-  /*end menu burger REGISTER*/
-
-  /*menu burger dashboard patient*/
-  .nav-bar {
-    position: absolute !important;
-    top: 62px !important;
-    right: 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 30px;
-    font-size: 18px !important;
-    background-color: beige;
-    border-radius: 15px !important;
-    max-height: 200px !important;
-    padding: 0 15px 30px 0 !important;
-  }
-  .icons-nav-bar {
-    display: block !important;
-    font-size: 25px !important;
-    color: #1b7cb0;
-  }
-  .parents-nav-bar {
-    display: none;
-  }
-  .vue {
-    display: block !important;
-  }
-  .bar {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-  }
-
-  /*end menu burger register*/
-  .profil {
-    display: flex;
-    flex-direction: column;
-    width: 100px;
-    margin-right: 10px;
-    text-align: center;
-  }
+/* end specialist responsive */
 }

@@ -1,8 +1,8 @@
 <?php 
+// Gere les types de medecins comme cardiologue ou dentiste
 $action= $_GET['action'];
 
-
-
+// Ajouter une nouvelle specialite
 if($action == 'create') {
     try {
         $intitule= $_POST['intitule'];
@@ -37,11 +37,7 @@ if($action == 'create') {
     }
 }
 
-
-
-
-
-
+// Modifier une specialite existante
 if($action == 'update') {
     try {
         $idspecialite= $_POST['idspecialite'];
@@ -79,12 +75,7 @@ if($action == 'update') {
     }
 }
 
-
-
-
-
-
-
+// Supprimer une specialite
 if($action == 'delete') {
     try {
         $idspecialite= $_REQUEST['id'];
@@ -92,7 +83,7 @@ if($action == 'delete') {
 
         $_SESSION['erreur']= array(
             'type' => 'success',
-            'message' => "La spécialité $specialite->intitule a été supprimée avec succès"
+            'message' => "La spécialité a été supprimée avec succès"
         );
         header('Location:index.php?view=specialite');
     }
@@ -104,8 +95,4 @@ if($action == 'delete') {
         header('Location:index.php?view=specialite.edit');
     }
 }
-
-
-
-
 ?>

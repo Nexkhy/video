@@ -5,11 +5,21 @@ class RdvDB {
     private $db;
     private $tablename;
     private $tableid;
+    private $jointure;
 
     public function __construct() {
         $this->db= new Database();
         $this->tablename= 'rdv';
         $this->tableid= 'idrdv';
+        $this->jointure = "
+            select 
+                R.*, 
+                PA.nom as nom_patient, PA.prenom as prenom_patient, PA.email as email_patient, PA.photo as photo_patient,
+                ME.nom as nom_medecin, ME.prenom as prenom_medecin, ME.email as email_medecin, ME.photo as photo_medecin
+            from $this->tablename as R
+            inner join user as PA on R.iduser = PA.iduser
+            inner join user as ME on R.idmedecin = ME.iduser
+        ";
     }
 
     public function create($iduser, $idmedecin, $motif, $date_rdv, $duree, $statut) {
@@ -37,14 +47,28 @@ class RdvDB {
     }
 
     public function read($id) {
-        $sql= "select * from $this->tablename where $this->tableid=?";
+        $sql= $this->jointure . " where R.$this->tableid=?";
         $params= array($id);
         $req= $this->db->prepare($sql, $params);
         return $this->db->getDatas($req, true);
     }
 
+    public function readMedecin($idmedecin) {
+        $sql= $this->jointure . " where R.idmedecin=? order by R.date_rdv desc";
+        $params= array($idmedecin);
+        $req= $this->db->prepare($sql, $params);
+        return $this->db->getDatas($req, false);
+    }
+
+    public function readPatient($iduser) {
+        $sql= $this->jointure . " where R.iduser=? order by R.date_rdv desc";
+        $params= array($iduser);
+        $req= $this->db->prepare($sql, $params);
+        return $this->db->getDatas($req, false);
+    }
+
     public function readAll() {
-        $sql= "select * from $this->tablename order by $this->tableid desc";
+        $sql= $this->jointure . " order by R.$this->tableid desc";
         $params= null;
         $req= $this->db->prepare($sql, $params);
         return $this->db->getDatas($req, false);

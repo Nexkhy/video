@@ -1,4 +1,5 @@
 <?php 
+// Page d'authentification pour accéder aux espaces sécurisés
 require_once 'config.php'; 
 include(BACKEND_PATH_ERREUR);
 ?>
@@ -17,30 +18,18 @@ include(BACKEND_PATH_ERREUR);
  
 <body>
     <!-- Navigation principale (commune à toutes les pages) -->
-    <!-- Header -->
-    <header>
-        <div class="container register">
-            <div class="header-content">
-                <div class="logo">
-                <i class="fas fa-heartbeat"></i>
-                 <h4 style="color: #3284e0;">Eco_santé</h4>
-            </div>
-                <nav class="parent-bar-register">
-                    <ul class="bar-register">
-                        <li>
-                            <a href="index.php" class="active" id="nav-accueil">
-                                Accueil
-                            </a>
-                        </li>
-                        <li>
-                            <a href="login.php" class="btn" id="btn-login">
-                                Se connecter
-                            </a>
-                        </li>
-                    </ul>
+    <header style="background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+        <div class="container">
+            <div class="header-content" style="height: 56px;">
+                <div class="logo" style="display:flex; align-items:center; gap:8px;">
+                    <a href="index.php" style="color:var(--primary-color); font-size:1.2rem;"><i class="fas fa-heartbeat"></i></a>
+                    <h1 style="color:var(--primary-color); font-size:1.2rem; margin:0; line-height:1;">Eco-Santé</h1>
+                </div>
+                <nav style="display:flex; align-items:center; gap:15px;">
+                    <a href="index.php" class="nav-link">Accueil</a>
+                    <a href="register.php" class="nav-link btn" style="padding:6px 14px; background:var(--primary-color); color:white; border-radius:20px;">Créer un compte</a>
                 </nav>
             </div>
-            <span><i class="fa-solid fa-bars fa-2x icon-bar-register"></i></span>
         </div>
     </header>
 

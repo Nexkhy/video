@@ -1,5 +1,5 @@
 <?php
-require_once 'vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -53,7 +53,7 @@ class Mailer {
             return true;
         }
         catch (Exception $e) {
-            echo "Le message n'a pas pu être envoyé. <br /> Erreur : {$this->mail->ErrorInfo}";
+            // echo "Le message n'a pas pu être envoyé. <br /> Erreur : {$this->mail->ErrorInfo}";
             return false;
         }
     }

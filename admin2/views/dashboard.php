@@ -30,6 +30,138 @@
     </div>
 
 
+<?php 
+if(isset($_SESSION['profil'])): 
+    // On met à jour l'utilisateur courant pour obtenir son solde en temps réel
+    $currentUser = $userdb->read($_SESSION['profil']->iduser);
+    if($currentUser->role == 'medecin'):
+?>
+    <div class="row mb-4">
+        <div class="col-xl-12">
+            <div class="card bg-success text-white">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="text-white mb-2">Mon Portefeuille (Solde Actuel)</h4>
+                        <h2 class="text-white mb-0"><?= number_format($currentUser->solde, 0, ',', ' ') ?> FCFA</h2>
+                    </div>
+                    <div>
+                        <button class="btn btn-light text-success font-weight-bold" data-bs-toggle="modal" data-bs-target="#retraitModal" data-toggle="modal" data-target="#retraitModal">Demander un Retrait</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retrait Modal -->
+    <div class="modal fade" id="retraitModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Demande de Retrait</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-dark">
+                    <form method="POST" action="index.php?view=retrait.control&action=demande_retrait">
+                        <input type="hidden" name="iduser" value="<?= $currentUser->iduser ?>">
+                        <div class="form-group mb-3">
+                            <label>Montant à retirer (FCFA)</label>
+                            <input type="number" name="montant" class="form-control" max="<?= $currentUser->solde ?>" required>
+                        </div>
+                        <p class="text-muted small">Les fonds seront déduits de votre solde et mis en attente jusqu'à la validation par l'administrateur.</p>
+                        <button type="submit" class="btn btn-success w-100">Confirmer le retrait</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php elseif($currentUser->role == 'admin'): ?>
+    <div class="row mb-4">
+        <div class="col-xl-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4 class="text-white mb-2">Solde de la Plateforme (Gains Administrateur)</h4>
+                    <h2 class="text-white mb-0"><?= number_format($currentUser->solde, 0, ',', ' ') ?> FCFA</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php 
+    endif;
+endif; 
+?>
+
+<?php
+// Section RDV en attente - uniquement pour les médecins
+if(isset($_SESSION['profil']) && $currentUser->role == 'medecin'):
+    $rdv_en_attente = $rdvdb->readMedecin($currentUser->iduser);
+    $rdv_pending = array_filter($rdv_en_attente ?: [], function($r) { return strtolower($r->statut) === 'en attente'; });
+?>
+<div class="row mb-4">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                <h4 class="fs-20 text-black mb-0">
+                    <i class="fas fa-calendar-check mr-2 text-warning"></i>
+                    Demandes de Rendez-vous en Attente
+                    <?php if(count($rdv_pending) > 0): ?>
+                        <span class="badge badge-warning badge-pill ml-2"><?= count($rdv_pending) ?></span>
+                    <?php endif; ?>
+                </h4>
+                <a href="index.php?view=rdv" class="btn btn-xs btn-primary">Voir tous les RDV</a>
+            </div>
+            <div class="card-body">
+                <?php if(count($rdv_pending) > 0): ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Motif</th>
+                                <th>Date souhaitée</th>
+                                <th>Durée</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($rdv_pending as $rdv): ?>
+                            <tr>
+                                <td>
+                                    <strong><?= $rdv->prenom_patient . ' ' . $rdv->nom_patient ?></strong><br>
+                                    <small class="text-muted"><?= $rdv->email_patient ?></small>
+                                </td>
+                                <td><?= htmlspecialchars($rdv->motif) ?></td>
+                                <td><?= date('d/m/Y à H:i', strtotime($rdv->date_rdv)) ?></td>
+                                <td><?= $rdv->duree ?></td>
+                                <td>
+                                    <a href="index.php?view=rdv.control&action=updateStatut&id=<?= $rdv->idrdv ?>&statut=validé" 
+                                       class="btn btn-xs btn-success"
+                                       onclick="return confirm('Valider ce rendez-vous ? Un email sera envoyé au patient.')">
+                                        <i class="fas fa-check"></i> Valider
+                                    </a>
+                                    <a href="index.php?view=rdv.control&action=updateStatut&id=<?= $rdv->idrdv ?>&statut=annulé"
+                                       class="btn btn-xs btn-danger ml-1"
+                                       onclick="return confirm('Annuler ce rendez-vous ?')">
+                                        <i class="fas fa-times"></i> Annuler
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php else: ?>
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                        <p>Aucune demande de rendez-vous en attente.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+
     <div class="row">
         <div class="col-xl-3 col-sm-6 m-t35">
             <div class="card card-coin">
@@ -44,7 +176,9 @@
                             d="M40.5283 10.8305C24.4443 10.5471 11.1271 23.3976 10.8438 39.4816C10.5438 55.549 23.3943 68.8662 39.4783 69.1662C55.5623 69.4495 68.8795 56.599 69.1628 40.5317C69.4462 24.4477 56.6123 11.1305 40.5283 10.8305ZM40.0033 19.1441L49.272 35.6798L40.8133 30.973C40.3083 30.693 39.6966 30.693 39.1916 30.973L30.7329 35.6798L40.0033 19.1441ZM40.0033 60.8509L30.7329 44.3152L39.1916 49.022C39.4433 49.162 39.7233 49.232 40.0016 49.232C40.28 49.232 40.56 49.162 40.8117 49.022L49.2703 44.3152L40.0033 60.8509ZM40.0033 45.6569L29.8296 39.9967L40.0033 34.3364L50.1754 39.9967L40.0033 45.6569Z"
                             fill="#00ADA3" />
                     </svg> --> 
-                    <h2 class="text-black mb-2 font-w600">Patients inscrits</h2>
+                    <h2 class="text-black mb-2 font-w600">
+                        <?= ($currentUser->role == 'medecin') ? $consultationdb->countPatientsByMedecin($currentUser->iduser) : $consultationdb->countAllPatients() ?>
+                    </h2>
                     <p class="mb-0 fs-14">
                         <svg width="29" height="22" viewBox="0 0 29 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g filter="url(#filter0_d1)">
@@ -66,8 +200,9 @@
                                 </filter>
                             </defs>
                         </svg>
-                        <span class="text-success mr-1">12</span>This week
+                        <span class="text-success mr-1">Total</span>
                     </p>
+
                 </div>
             </div>
         </div>
@@ -90,7 +225,9 @@
                             d="M44.385 36.5066C45.015 35.8766 45.3983 35.0316 45.3983 34.08C45.3983 32.1916 43.8633 30.655 41.9733 30.655H36.8133V37.52H41.9733C42.91 37.52 43.77 37.12 44.385 36.5066Z"
                             fill="#FFAB2D" />
                     </svg> -->
-                    <h2 class="text-black mb-2 font-w600">Médecins inscrits</h2>
+                    <h2 class="text-black mb-2 font-w600">
+                        <?= $consultationdb->countAllMedecins() ?>
+                    </h2>
                     <p class="mb-0 fs-13">
                         <!-- <svg width="29" height="22" viewBox="0 0 29 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g filter="url(#filter0_d2)"> -->
@@ -112,8 +249,9 @@
                                 </filter>
                             </defs>
                         </svg>
-                        <span class="text-success mr-1">5</span>This week
+                        <span class="text-success mr-1">Spécialistes</span>
                     </p>
+
                 </div>
             </div>
         </div>
@@ -130,7 +268,9 @@
                             d="M40.5283 10.8305C24.4443 10.5471 11.1271 23.3976 10.8438 39.4816C10.5438 55.549 23.3943 68.8662 39.4783 69.1662C55.5623 69.4495 68.8795 56.599 69.1628 40.5317C69.4462 24.4477 56.6123 11.1305 40.5283 10.8305ZM52.5455 56.9324H26.0111L29.2612 38.9483L25.4944 39.7317V36.6649L29.8279 35.7482L32.6447 20.2809H43.2284L40.8283 33.4481L44.5285 32.6647V35.7315L40.2616 36.6149L37.7949 50.2154H54.5122L52.5455 56.9324Z"
                             fill="#374C98" />
                     </svg> -->
-                    <h2 class="text-black mb-2 font-w600">Consultations réalisés</h2>
+                    <h2 class="text-black mb-2 font-w600">
+                        <?= ($currentUser->role == 'medecin') ? $consultationdb->countConsultationsByMedecin($currentUser->iduser) : count($consultationdb->readAll()) ?>
+                    </h2>
                     <p class="mb-0 fs-14">
                         <svg width="29" height="22" viewBox="0 0 29 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g filter="url(#filter0_d4)">
@@ -152,8 +292,9 @@
                                 </filter>
                             </defs>
                         </svg>
-                        <span class="text-danger mr-1">5</span>This week
+                        <span class="text-danger mr-1">Réalisées</span>
                     </p>
+
                 </div>
             </div>
         </div>
@@ -173,7 +314,9 @@
                             d="M53.3339 55.1806V31.943L41.4934 55.919C40.9334 57.0574 39.065 57.0574 38.5049 55.919L26.6661 31.943V55.1806C26.6661 56.1007 25.9211 56.8474 24.9994 56.8474H16.2474C21.4326 64.1327 29.8629 68.9795 39.475 69.1595C49.4704 69.3362 58.3908 64.436 63.786 56.8474H55.0006C54.0789 56.8474 53.3339 56.1007 53.3339 55.1806Z"
                             fill="#FF782C" />
                     </svg> -->
-                    <h2 class="text-black mb-2 font-w600">Revenues genérés</h2>
+                    <h2 class="text-black mb-2 font-w600">
+                        <?= number_format(($currentUser->role == 'medecin') ? $consultationdb->sumMontantByMedecin($currentUser->iduser) : $currentUser->solde, 0, ',', ' ') ?> FCFA
+                    </h2>
                     <p class="mb-0 fs-14">
                         <svg width="29" height="22" viewBox="0 0 29 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g filter="url(#filter0_d5)">
@@ -195,8 +338,9 @@
                                 </filter>
                             </defs>
                         </svg>
-                        <span class="text-success mr-1"> + 20%</span>This week
+                        <span class="text-success mr-1">Gains</span>
                     </p>
+
                 </div>
             </div>
         </div>

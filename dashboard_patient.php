@@ -45,22 +45,23 @@ else {
             </div>
 
             <div class="dashboard-cards">
-                <div class="dashboard-card" data-page="specialists">
+                <div class="dashboard-card" onclick="location.href='index.php'">
                     <h3>Spécialistes</h3>
                     <p>Prendre rendez-vous avec un spécialiste medecin ou naturophate</p>
                 </div>
-                <div class="dashboard-card" data-page="appointments">
+                <div class="dashboard-card" onclick="location.href='notification.php'">
                     <h3>Mes rendez-vous</h3>
                     <p>Accéder à vos rendez-vous via les notifications</p>
                 </div>
-                <div class="dashboard-card" data-page="consultations">
+                <div class="dashboard-card" onclick="location.href='consult.php'">
                     <h3>Consultations</h3>
                     <p>Démarrez une consultations</p>
                 </div>
-                <div class="dashboard-card" data-page="prescriptions">
+                <div class="dashboard-card" onclick="location.href='profil.php'">
                     <h3>Mes ordonnances</h3>
                     <p>Consulter mes ordonnances par mon dossier medical</p>
                 </div>
+
             </div>
         </div>
     </section>

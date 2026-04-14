@@ -12,7 +12,11 @@ else {
 
 include(BACKEND_PATH_ERREUR);
 
-$medecins= $userdb->readRole('medecin');
+if(isset($_GET['idspecialite']) && !empty($_GET['idspecialite'])) {
+    $medecins = $userdb->readSpecialite($_GET['idspecialite']);
+} else {
+    $medecins = $userdb->readRole('medecin');
+}
 
 ?>
 
@@ -52,6 +56,12 @@ $medecins= $userdb->readRole('medecin');
     <!-- Page spécialistes  -->
 
     <main class="container">
+        <?php if(isset($_GET['msg']) && $_GET['msg'] == 'success'): ?>
+            <div class="alert alert-success mt-3 mb-3">
+                <i class="fas fa-check-circle me-2"></i> Votre demande de rendez-vous a été envoyée avec succès au médecin.
+            </div>
+        <?php endif; ?>
+
         <div class="search-bar-container">
             <input type="text" name="search" id="specialist-search" placeholder="Rechercher un spécialiste...">
         </div>
@@ -86,35 +96,26 @@ $medecins= $userdb->readRole('medecin');
                         <div class="planning-info">
                             <p>
                                 <strong>Planning :</strong>
-                                Lundi, Mercredi, Vendredi
+                                <?= ($medecin->planning) ? $medecin->planning : 'À définir' ?>
                             </p>
                             <p>
                                 <strong>Crénaux :</strong>
-                                09:00, 11:00, 14:30
+                                <?= ($medecin->creneaux) ? $medecin->creneaux : 'À définir' ?>
                             </p>
                         </div>
                         <div class="rdv-action">
-                            <button class="btn btn-danger btn-md" data-bs-toggle="modal" data-bs-target="#formModal"
-                                onclick="editForm(<?= $medecin->iduser ?>)">
-                                <!-- <i class="fas fa-plus me-1"></i>  -->
-                                Prendre un rendez-vous
-                            </button>
-                               <button class="btn btn-success btn-md" >
-                                <!-- <i class="fas fa-plus me-1"></i>  -->
-                                Effectuer un Paiement
-                            </button>
-                            <button class="btn btn-primary btn-md" >
-                                <!-- <i class="fas fa-plus me-1"></i>  -->
-                               <a href="meet.php" style="color:white;text-decoration-line:none;">Debuter la Consultation</a> 
-                            </button>
+                            <a href="profil_medecin.php?id=<?= $medecin->iduser ?>" class="btn btn-primary btn-md w-100 mb-2">
+                                <i class="fas fa-user me-1"></i> 
+                                Voir le profil
+                            </a>
+                            <a href="profil_medecin.php?id=<?= $medecin->iduser ?>" class="btn btn-danger btn-md w-100">
+                                <i class="fas fa-calendar-plus me-1"></i> 
+                                Prendre un RDV
+                            </a>
+                            <p class="mt-2 text-muted small"><i class="fas fa-info-circle"></i> Le paiement s'effectue après validation du médecin.</p>
                         </div>
-                    </div>
 
-                    <script type="text/javascript">
-                        function editForm(id) {
-                            document.querySelector("#idmedecin").value= id;
-                        }
-                    </script>
+                    </div>
 
                     <?php
                         endforeach;
@@ -122,6 +123,17 @@ $medecins= $userdb->readRole('medecin');
                     ?>
                 </section>
     </main>
+    
+    <script type="text/javascript">
+        function editForm(id) {
+            document.querySelector("#idmedecin").value= id;
+        }
+    <script type="text/javascript">
+        function editForm(id) {
+            document.querySelector("#idmedecin").value= id;
+        }
+    </script>
+    </script>
 
 
 
@@ -133,7 +145,7 @@ $medecins= $userdb->readRole('medecin');
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form name="form_edit" id="form_edit" method="POST" action="#" enctype="multipart/form-data">
+                    <form name="form_edit" id="form_edit" method="POST" action="<?= BACKEND_PATH_INDEX ?>?view=rdv.control&action=create" enctype="multipart/form-data">
 
                         <input type="hidden" name="iduser" id="iduser" value="<?= $profil->iduser ?>" />
 
@@ -160,6 +172,7 @@ $medecins= $userdb->readRole('medecin');
                         </button>
                     </form>
                 </div>
+                </div>
                 <div class="modal-footer">
 
                 </div>
@@ -173,11 +186,29 @@ $medecins= $userdb->readRole('medecin');
 
 
 
+
     <!-- Pied de page (commun à toutes les pages) -->
     <?php include('includes/footer.php') ?>
 
 
     <script src="assets/js/eco_sante.js"></script>
+    <script>
+        document.getElementById('specialist-search').addEventListener('input', function() {
+            let filter = this.value.toUpperCase();
+            let blocks = document.getElementsByClassName('specialist-block');
+            
+            for (let i = 0; i < blocks.length; i++) {
+                let name = blocks[i].getElementsByTagName('h3')[0].innerText.toUpperCase();
+                let specialty = blocks[i].getElementsByClassName('specialty')[0].innerText.toUpperCase();
+                
+                if (name.indexOf(filter) > -1 || specialty.indexOf(filter) > -1) {
+                    blocks[i].style.display = "";
+                } else {
+                    blocks[i].style.display = "none";
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

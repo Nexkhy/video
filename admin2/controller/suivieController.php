@@ -1,8 +1,8 @@
 <?php 
+// Gere le suivi medical et les comptes rendus
 $action= $_GET['action'];
 
-
-
+// Ajouter un compte rendu de consultation
 if($action == 'create') {
     try {
         $idconsultation= $_POST['idconsultation'];
@@ -34,11 +34,7 @@ if($action == 'create') {
     }
 }
 
-
-
-
-
-
+// Modifier un compte rendu
 if($action == 'update') {
     try {
         $idsuivie= $_POST['idsuivie'];
@@ -74,14 +70,7 @@ if($action == 'update') {
     }
 }
 
-
-
-
-
-
-
-
-
+// Supprimer un compte rendu
 if($action == 'delete') {
     try {
         $idsuivie= $_REQUEST['id'];
@@ -105,8 +94,4 @@ if($action == 'delete') {
         header("Location:index.php?view=suivie.edit");
     }
 }
-
-
-
-
 ?>

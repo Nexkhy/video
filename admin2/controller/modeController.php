@@ -1,8 +1,8 @@
 <?php 
+// Gere les modes de paiement comme Orange ou MTN
 $action= $_GET['action'];
 
-
-
+// Ajout d'un nouveau mode de paiement
 if($action == 'create') {
     try {
         $intitule= $_POST['intitule'];
@@ -35,11 +35,7 @@ if($action == 'create') {
     }
 }
 
-
-
-
-
-
+// Modification d'un mode existant
 if($action == 'update') {
     try {
         $idmode= $_POST['idmode'];
@@ -75,12 +71,7 @@ if($action == 'update') {
     }
 }
 
-
-
-
-
-
-
+// Suppression d'un mode de paiement
 if($action == 'delete') {
     try {
         $idmode= $_REQUEST['id'];
@@ -88,7 +79,7 @@ if($action == 'delete') {
 
         $_SESSION['erreur']= array(
             'type' => 'success',
-            'message' => "Le mode de paiement $mode->intitule a été supprimée avec succès"
+            'message' => "Le mode de paiement a été supprimée avec succès"
         );
         header('Location:index.php?view=mode');
     }
@@ -100,8 +91,4 @@ if($action == 'delete') {
         header('Location:index.php?view=mode.edit');
     }
 }
-
-
-
-
 ?>

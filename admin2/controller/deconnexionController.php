@@ -1,4 +1,5 @@
 <?php
+// Ferme la session de l'utilisateur
 $user= $_SESSION['profil'];
 session_unset();
 $_SESSION['erreur']= array(

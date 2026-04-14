@@ -61,6 +61,30 @@ $routes = [
         "view" => null,
         "controller" => "controller/consultationController.php",
     ],
+    "paiement.control" => [
+        "view" => null,
+        "controller" => "controller/paiementController.php",
+    ],
+    "retrait.control" => [
+        "view" => null,
+        "controller" => "controller/retraitController.php",
+    ],
+    "retraits" => [
+        "view" => "views/retraits.php",
+        "controller" => null,
+    ],
+    "rdv" => [
+        "view" => "views/rdv/index.php",
+        "controller" => null,
+    ],
+    "rdv.edit" => [
+        "view" => "views/rdv/edit.php",
+        "controller" => null,
+    ],
+    "rdv.control" => [
+        "view" => null,
+        "controller" => "controller/rdvController.php",
+    ],
 ];
 
 

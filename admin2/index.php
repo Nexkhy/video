@@ -398,6 +398,12 @@ if ($route['controller'] !== null && file_exists($route['controller'])) {
                         </ul>
                     </li>
                     <li>
+                        <a class="ai-icon" href="index.php?view=retraits">
+                            <i class="flaticon-381-network"></i>
+                            <span class="nav-text">Demandes de Retraits</span>
+                        </a>
+                    </li>
+                    <li>
                         <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                             <i class="flaticon-381-settings-2"></i>
                             <span class="nav-text">Spécialités</span>
